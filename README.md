@@ -151,9 +151,8 @@ StudyFlow-AI/
 
 Proyecto desarrollado por:
 
-**Andrea De la Ossa**
-🎓 Estudiante de Ingeniería de Sistemas
-💻 Desarrollo Frontend (HTML, CSS, JavaScript)
-☁️ Integración con Firebase
-🎯 Interfaces gráficas y herramientas web
-🌱 En constante aprendizaje
+**Andrea De la Ossa**  
+🎓 Estudiante de Ingeniería de Sistemas           
+💻 Desarrollo Frontend (JavaScript, React)               
+🎯 Interfaces gráficas y herramientas web           
+🌱 En constante aprendizaje         
