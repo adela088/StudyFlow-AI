@@ -1,99 +1,87 @@
-# StudyFlow AI 📚
+# 📚 StudyFlow AI
 
-Aplicación web de organización académica con asistencia inteligente.
+![HTML](https://img.shields.io/badge/HTML5-orange?style=for-the-badge&logo=html5)
+![CSS](https://img.shields.io/badge/CSS3-blue?style=for-the-badge&logo=css3)
+![JavaScript](https://img.shields.io/badge/JavaScript-ES6-yellow?style=for-the-badge&logo=javascript)
+![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)
+![Estado](https://img.shields.io/badge/Estado-En%20desarrollo-blue?style=for-the-badge)
+![Plataforma](https://img.shields.io/badge/Plataforma-Web-lightgrey?style=for-the-badge)
 
-## Características
+## 📖 Descripción
+
+> **StudyFlow AI** es una aplicación web de organización académica con asistencia inteligente, desarrollada con **HTML, CSS y JavaScript Vanilla** con backend en **Firebase**. Permite a los estudiantes gestionar sus materias, horarios, objetivos y analizar su productividad en tiempo real.
+
+---
+
+## ✨ Características principales
 
 - 📊 Dashboard con métricas de productividad en tiempo real
 - 📅 Horario semanal con organización automática por IA
 - 📚 Gestión de materias con predicción de carga académica
-- 🎯 Seguimiento de objetivos y tareas
-- 📈 Estadísticas y mapa de calor de actividad
-- ⚡ Modo Concentración (Pomodoro)
-- 🤖 Asistente IA conversacional
-- ⚙️ Configuración de perfil, tema y preferencias
+- 🎯 Seguimiento de objetivos y tareas con prioridades
+- 📈 Estadísticas y mapa de calor de actividad semanal
+- ⚡ Modo Concentración con temporizador Pomodoro
+- 🤖 Asistente IA conversacional con contexto académico
+- ⚙️ Configuración de perfil, tema visual y preferencias
+- 🌗 Modo claro / oscuro + colores de acento personalizables
 - 🔐 Autenticación con Firebase (Email, Google, GitHub)
-- ☁️ Base de datos en tiempo real con Firebase
+- ☁️ Sincronización en tiempo real con Firebase Realtime Database
+- 📥 Exportación de datos en CSV y JSON
 
-## Tecnologías
+---
 
-- HTML5 / CSS3 / JavaScript (Vanilla)
-- Firebase Authentication
-- Firebase Realtime Database
-- Google Fonts (Plus Jakarta Sans + Space Mono)
+## 🖥️ Tecnologías utilizadas
 
-## Configuración
+- **HTML5**
+- **CSS3**
+- **JavaScript ES6 (Vanilla)**
+- **Firebase Authentication**
+- **Firebase Realtime Database**
+- **Google Fonts** (Plus Jakarta Sans + Space Mono)
 
-### 1. Clonar el repositorio
+---
 
+## ▶️ Cómo ejecutar el proyecto
+
+### 🔹 Opción 1 – Ejecutar localmente
+
+> 📌 Requiere tener configurado un proyecto en Firebase
+
+1. Clona el repositorio:
 ```bash
 git clone https://github.com/adela088/StudyFlow-AI.git
-cd studyflow-ai
 ```
 
-### 2. Configurar Firebase
+2. Entra al proyecto:
+```bash
+cd StudyFlow-AI
+```
 
+3. Configura Firebase:
 ```bash
 cp js/firebase-config.example.js js/firebase-config.js
 ```
 
-Edita `js/firebase-config.js` con tus credenciales de Firebase Console.
+4. Edita `js/firebase-config.js` con tus credenciales de Firebase Console
 
-### 3. Configurar Firebase Console
-
-- Activa **Authentication** → Email/Contraseña + Google + GitHub
-- Crea una **Realtime Database** en modo test
-- Aplica las reglas de seguridad del archivo `FIREBASE_SETUP.md`
-
-### 4. Correr localmente
-
-```bash
-# Con Live Server (VS Code)
-# Clic derecho en index.html → Open with Live Server
-
-# Con Python
-python3 -m http.server 3000
-
-# Con Node.js
-npx serve .
+5. Ejecuta con Live Server (VS Code) o cualquier servidor local:
+```text
+login.html
 ```
 
-Abre `http://localhost:3000/login.html`
+> ⚠️ No abrir directamente con `file://` — los módulos ES6 requieren servidor local
 
-## Estructura del proyecto
+### 🔹 Opción 2 – Configuración Firebase
 
-```
-studyflow/
-├── index.html              # App principal
-├── login.html              # Pantalla de autenticación
-├── css/
-│   ├── main.css            # Estilos globales
-│   ├── sidebar.css         # Navegación lateral
-│   ├── login.css           # Estilos de login
-│   └── settings.css        # Estilos de configuración
-├── js/
-│   ├── firebase-config.js  # ⚠️ No subir a Git
-│   ├── firebase-config.example.js  # Plantilla
-│   ├── firebase.js         # Servicios Firebase
-│   ├── state.js            # Estado global
-│   ├── utils.js            # Utilidades
-│   ├── navigation.js       # Enrutador SPA
-│   ├── db-sync.js          # Sincronización Firebase
-│   ├── dashboard.js        # Página Dashboard
-│   ├── schedule.js         # Página Horario
-│   ├── subjects.js         # Página Materias
-│   ├── objectives.js       # Página Objetivos
-│   ├── stats.js            # Página Estadísticas
-│   ├── settings.js         # Página Configuración
-│   ├── chat.js             # Asistente IA
-│   ├── focus.js            # Modo Concentración
-│   └── modals.js           # Control de modales
-└── FIREBASE_SETUP.md       # Guía de configuración
-```
+Consulta la guía completa de configuración en:
 
-## Variables de entorno
+📄 **[FIREBASE_SETUP.md](./FIREBASE_SETUP.md)**
 
-Copia `js/firebase-config.example.js` a `js/firebase-config.js` y completa:
+---
+
+## 🔐 Variables de entorno
+
+Copia `js/firebase-config.example.js` → `js/firebase-config.js` y completa:
 
 | Variable | Descripción |
 |----------|-------------|
@@ -105,6 +93,67 @@ Copia `js/firebase-config.example.js` a `js/firebase-config.js` y completa:
 | `messagingSenderId` | ID del remitente |
 | `appId` | ID de la aplicación |
 
-## Licencia
+> ⚠️ El archivo `firebase-config.js` está en `.gitignore` — nunca se sube al repositorio
 
-MIT
+---
+
+## 👀 Vista previa
+
+### 📊 Dashboard
+![Dashboard](https://raw.githubusercontent.com/adela088/StudyFlow-AI/main/assets/dashboard.png)
+
+### 📚 Materias
+![Materias](https://raw.githubusercontent.com/adela088/StudyFlow-AI/main/assets/materias.png)
+
+### 📅 Horario
+![Horario](https://raw.githubusercontent.com/adela088/StudyFlow-AI/main/assets/horario.png)
+
+### ⚙️ Configuración
+![Configuración](https://raw.githubusercontent.com/adela088/StudyFlow-AI/main/assets/configuracion.png)
+
+---
+
+## 📁 Estructura del proyecto
+
+```
+StudyFlow-AI/
+├── index.html
+├── login.html
+├── css/
+│   ├── main.css
+│   ├── sidebar.css
+│   ├── login.css
+│   └── settings.css
+├── js/
+│   ├── firebase-config.example.js
+│   ├── firebase.js
+│   ├── state.js
+│   ├── utils.js
+│   ├── navigation.js
+│   ├── db-sync.js
+│   ├── dashboard.js
+│   ├── schedule.js
+│   ├── subjects.js
+│   ├── objectives.js
+│   ├── stats.js
+│   ├── settings.js
+│   ├── chat.js
+│   ├── focus.js
+│   └── modals.js
+├── .gitignore
+├── README.md
+└── FIREBASE_SETUP.md
+```
+
+---
+
+## 👩‍💻 Autoría
+
+Proyecto desarrollado por:
+
+**Andrea De la Ossa**
+🎓 Estudiante de Ingeniería de Sistemas
+💻 Desarrollo Frontend (HTML, CSS, JavaScript)
+☁️ Integración con Firebase
+🎯 Interfaces gráficas y herramientas web
+🌱 En constante aprendizaje
