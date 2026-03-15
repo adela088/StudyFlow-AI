@@ -788,6 +788,17 @@
         const days = ['L','M','X','J','V','S','D'];
         State.productivity = days.map(d => ({ day:d, hrs: data.productivity[d] || 0 }));
       }
+
+      // Calcular el siguiente ID a partir del máximo existente
+      // Evita colisiones al crear nuevos elementos
+      const allIds = [
+        ...State.subjects.map(s => s.id),
+        ...State.sessions.map(s => s.id),
+        ...State.objectives.map(o => o.id),
+      ].filter(id => typeof id === 'number');
+      if (allIds.length > 0) {
+        State._nextId = Math.max(...allIds);
+      }
     }
 
     // Aplica tema y configuración guardada
