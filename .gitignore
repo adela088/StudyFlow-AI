@@ -4,6 +4,7 @@
 
 # ── CREDENCIALES — NUNCA subir esto ──────────
 js/firebase-config.js
+js/api-config.js
 
 # ── Dependencias ─────────────────────────────
 node_modules/

@@ -12,6 +12,9 @@ const _chatHistory = [
 ];
 
 const _apiHistory = [];
+// API key cargada desde js/api-config.js (no está en Git)
+const _GEMINI_KEY = (typeof API_KEYS !== 'undefined') ? API_KEYS.gemini : '';
+const _GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${_GEMINI_KEY}`;
 
 /* ---- Avatar del usuario ---- */
 function _getUserAvatar() {
@@ -268,7 +271,28 @@ ${subjects.find(s => s.name.toLowerCase().includes('program') || s.name.toLowerC
   return contextual[Math.floor(Math.random() * Math.min(contextual.length, 3))];
 }
 
-/* ---- Send ---- */
+/* ---- Contexto académico para Gemini ---- */
+function _buildSystemPrompt() {
+  const name = window._authUser?.displayName?.split(' ')[0] || 'estudiante';
+  const subjects = State.subjects.map(s => `${s.name} (nota: ${s.grade}, avance: ${s.progress}%, próximo: ${s.next} el ${s.date})`).join(', ') || 'Sin materias';
+  const pending = State.objectives.filter(o => !o.done).map(o => o.title).join(', ') || 'Sin objetivos pendientes';
+  const streak = State.streak;
+  const today = State.sessions.filter(s => s.day === State.todayIdx()).length;
+
+  return `Eres un asistente de estudio inteligente y amigable llamado StudyFlow AI.
+Respondes siempre en español, de forma concisa, clara y útil.
+Puedes responder cualquier pregunta — académica, técnica, general o de la vida cotidiana.
+Cuando sea relevante usa el contexto del estudiante:
+- Nombre: ${name}
+- Materias: ${subjects}
+- Objetivos pendientes: ${pending}
+- Sesiones hoy: ${today}
+- Racha: ${streak} días
+Usa HTML básico (<strong>, <br>) para dar formato cuando ayude a la claridad.
+Sé natural y usa emojis con moderación.`;
+}
+
+/* ---- Send con Gemini API ---- */
 async function sendMsg(text) {
   const inp = document.getElementById('chatIn');
   const msg = text || inp.value.trim();
@@ -276,15 +300,50 @@ async function sendMsg(text) {
   inp.value = '';
 
   _chatHistory.push({ role: 'user', text: msg, time: getNow() });
+  _apiHistory.push({ role: 'user', parts: [{ text: msg }] });
   renderChat();
   _showTyping();
 
-  // Simula tiempo de "pensamiento"
-  await new Promise(r => setTimeout(r, 600 + Math.random() * 500));
-  document.getElementById('tdot')?.remove();
+  try {
+    const body = {
+      system_instruction: { parts: [{ text: _buildSystemPrompt() }] },
+      contents: _apiHistory,
+      generationConfig: { maxOutputTokens: 800, temperature: 0.7 },
+    };
 
-  const reply = _buildResponse(msg);
-  _chatHistory.push({ role: 'ai', text: reply, time: getNow() });
+    const res = await fetch(_GEMINI_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+
+    document.getElementById('tdot')?.remove();
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error?.message || 'Error ' + res.status);
+    }
+
+    const data = await res.json();
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No pude generar una respuesta.';
+
+    // Guardar en historial para contexto
+    _apiHistory.push({ role: 'model', parts: [{ text: reply }] });
+
+    // Limitar historial a 20 mensajes
+    if (_apiHistory.length > 20) _apiHistory.splice(0, 2);
+
+    _chatHistory.push({ role: 'ai', text: reply, time: getNow() });
+
+  } catch (err) {
+    document.getElementById('tdot')?.remove();
+    console.error('Gemini error:', err.message);
+
+    // Fallback a respuestas locales si falla la API
+    const fallback = _buildResponse(msg);
+    _chatHistory.push({ role: 'ai', text: fallback, time: getNow() });
+  }
+
   renderChat();
 }
 
