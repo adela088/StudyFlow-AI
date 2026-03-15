@@ -153,6 +153,7 @@ Proyecto desarrollado por:
 
 **Andrea De la Ossa**  
 🎓 Estudiante de Ingeniería de Sistemas           
-💻 Desarrollo Frontend (JavaScript, React)               
+💻 Desarrollo Frontend (HTML, CSS, JavaScript)              
+☁️ Integración con Firebase                                                    
 🎯 Interfaces gráficas y herramientas web           
 🌱 En constante aprendizaje         
