@@ -725,9 +725,9 @@
 <script type="module">
   import {
     onAuthChange, logout, deleteAccount, loadUserData, subscribeUserData,
-    saveSubject,    deleteSubject    as fbDelSubject,
-    saveSession,    deleteSession    as fbDelSession,    updateSession,
-    saveObjective,  deleteObjective  as fbDelObjective,  updateObjective,
+    saveSubject,    deleteSubject,
+    saveSession,    deleteSession,    updateSession,
+    saveObjective,  deleteObjective,  updateObjective,
     saveStreak,
   } from './js/firebase.js';
 
@@ -810,13 +810,10 @@
     initChatWithUser(user.displayName);
     refreshDash();
 
-    // ── Escucha cambios en tiempo real ──
-    subscribeUserData(user.uid, newData => {
-      if (!newData) return;
-      if (newData.subjects)   State.subjects   = Object.values(newData.subjects);
-      if (newData.sessions)   State.sessions   = Object.values(newData.sessions);
-      if (newData.objectives) State.objectives = Object.values(newData.objectives);
-    });
+    // No usamos subscribeUserData en tiempo real para evitar
+    // que Firebase restaure elementos borrados localmente.
+    // Los datos se cargan una sola vez al iniciar sesión.
+    window._isSyncing = false;
   });
 
   // ── Logout ────────────────────────────────

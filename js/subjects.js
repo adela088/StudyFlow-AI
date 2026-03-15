@@ -147,7 +147,7 @@ function openAddSubj() {
 
 async function saveSubj() {
   const name = document.getElementById('sjName').value.trim();
-  if (!name) { showToast('⚠️ Escribe el nombre'); return; }
+  if (!name || name.length < 2) { showToast('⚠️ El nombre debe tener al menos 2 caracteres'); return; }
 
   if (_editingId !== null) {
     // ── EDITAR materia existente ──

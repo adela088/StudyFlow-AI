@@ -20,9 +20,9 @@ import {
 import { FIREBASE_CONFIG } from "./firebase-config.js";
 
 // ── Inicialización ──────────────────────────
-const app  = initializeApp(FIREBASE_CONFIG);
+const app = initializeApp(FIREBASE_CONFIG);
 const auth = getAuth(app);
-const db   = getDatabase(app);
+const db = getDatabase(app);
 const googleP = new GoogleAuthProvider();
 const githubP = new GithubAuthProvider();
 
@@ -126,6 +126,7 @@ export async function saveSubject(uid, subject) {
 }
 export async function deleteSubject(uid, id) {
   await remove(userRef(uid, `subjects/${id}`));
+  console.log('🗑 Deleted subject from Firebase:', `users/${uid}/subjects/${id}`);
 }
 
 // ── Sessions ────────────────────────────────
@@ -164,15 +165,15 @@ async function _initUserData(user) {
   console.log('🔥 _initUserData para UID:', user.uid);
   const initial = {
     profile: {
-      name:      user.displayName || 'Estudiante',
-      email:     user.email,
+      name: user.displayName || 'Estudiante',
+      email: user.email,
       createdAt: Date.now(),
-      streak:    0,
+      streak: 0,
     },
-    subjects:     {},
-    sessions:     {},
-    objectives:   {},
-    productivity: { L:0, M:0, X:0, J:0, V:0, S:0, D:0 },
+    subjects: {},
+    sessions: {},
+    objectives: {},
+    productivity: { L: 0, M: 0, X: 0, J: 0, V: 0, S: 0, D: 0 },
   };
   try {
     await set(userRef(user.uid), initial);

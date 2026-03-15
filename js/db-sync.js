@@ -9,10 +9,10 @@ function _uid() {
   return window._currentUser ? window._currentUser.uid : null;
 }
 
-/* ── Helper: llama función de Firebase si hay sesión ── */
+/* ── Helper: llama función de Firebase ── */
 async function _sync(action) {
   const uid = _uid();
-  if (!uid) return; // Sin sesión, solo actualiza State local
+  if (!uid) return;
   try {
     await action(uid);
   } catch (err) {
@@ -30,11 +30,17 @@ async function syncSaveSubject(subject) {
 }
 
 async function syncDeleteSubject(id) {
-  await _sync(uid => window._FB.deleteSubject(uid, id));
-  // También eliminar sesiones locales de esa materia en Firebase
-  const orphanSessions = State.sessions.filter(s => s.sid === id);
-  for (const s of orphanSessions) {
-    await _sync(uid => window._FB.deleteSession(uid, s.id));
+  const uid = _uid();
+  if (!uid) return;
+  try {
+    await window._FB.deleteSubject(uid, id);
+    const orphanSessions = State.sessions.filter(s => s.sid === id);
+    for (const s of orphanSessions) {
+      await window._FB.deleteSession(uid, s.id);
+    }
+  } catch (err) {
+    console.error('❌ Error eliminando materia:', err.message);
+    showToast('⚠️ Error al eliminar');
   }
 }
 
