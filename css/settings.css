@@ -1,0 +1,93 @@
+/* =============================================
+   StudyFlow AI — css/settings.css
+   Estilos de la página de configuración
+   ============================================= */
+
+/* Toggle switch */
+.toggle-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.toggle-wrap input { position: absolute; opacity: 0; width: 0; height: 0; }
+.toggle-track2 {
+  width: 40px; height: 22px;
+  background: var(--border2);
+  border-radius: 11px;
+  transition: background 0.2s;
+  position: relative;
+}
+.toggle-track2::after {
+  content: '';
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.2s;
+}
+.toggle-wrap input:checked + .toggle-track2 { background: var(--accent); }
+.toggle-wrap input:checked + .toggle-track2::after { transform: translateX(18px); }
+
+/* Day buttons */
+.day-btn {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text3);
+  font-family: 'Space Mono', monospace;
+  font-size: 11px; font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.day-btn:hover { border-color: var(--accent); color: var(--accent); }
+.day-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+  box-shadow: 0 0 8px var(--glow);
+}
+
+/* Range inputs */
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--surface2);
+  outline: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  box-shadow: 0 0 6px var(--glow);
+  transition: transform 0.15s;
+}
+input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+input[type="range"]::-moz-range-thumb {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: none;
+}
+
+/* Theme options */
+.theme-opt { transition: all 0.2s; }
+.theme-opt:hover { transform: translateY(-2px); }
+
+/* Accent color options */
+.accent-opt { transition: all 0.15s; }
+.accent-opt:hover { transform: scale(1.15); }
+
+/* Settings avatar hover */
+#settingsAvatar:hover { opacity: 0.85; }

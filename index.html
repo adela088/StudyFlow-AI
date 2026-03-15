@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StudyFlow AI</title>
+
+  <!-- Fuentes -->
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="css/sidebar.css" />
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/settings.css" />
+</head>
+<body>
+
+<!-- ═══════════════════════════
+     SIDEBAR DE NAVEGACIÓN
+     ═══════════════════════════ -->
+<nav class="sidebar">
+  <div class="logo" onclick="nav('dashboard')">SF</div>
+
+  <div class="nav-item active" data-p="dashboard"  onclick="nav('dashboard')">
+    📊<span class="tip">Dashboard</span>
+  </div>
+  <div class="nav-item" data-p="schedule"   onclick="nav('schedule')">
+    📅<span class="tip">Horario</span>
+  </div>
+  <div class="nav-item" data-p="subjects"   onclick="nav('subjects')">
+    📚<span class="tip">Materias</span>
+  </div>
+  <div class="nav-item" data-p="objectives" onclick="nav('objectives')" style="position:relative">
+    🎯<span class="tip">Objetivos</span>
+    <div class="ndot" id="objDot" style="display:none"></div>
+  </div>
+  <div class="nav-item" data-p="stats"      onclick="nav('stats')">
+    📈<span class="tip">Estadísticas</span>
+  </div>
+  <div class="nav-item" data-p="settings" style="margin-top:auto" onclick="nav('settings')">
+    ⚙️<span class="tip">Configuración</span>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════
+     CONTENIDO PRINCIPAL
+     ═══════════════════════════ -->
+<main class="main">
+
+  <!-- ──────────────── DASHBOARD ──────────────── -->
+  <div class="page active" id="page-dashboard">
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1>StudyFlow <span>AI</span></h1>
+        <p id="dateDisp">CARGANDO...</p>
+      </div>
+      <div class="topbar-right">
+        <span class="streak">🔥 <span id="strkCnt">12</span> días</span>
+        <button class="fbtn" onclick="openFocusSel()">⚡ Modo Concentración</button>
+        <div style="position:relative">
+          <div class="avatar" id="userAvatar" style="cursor:pointer"
+               onclick="document.getElementById('userMenu').classList.toggle('open')">AL</div>
+          <div id="userMenu" style="display:none;position:absolute;right:0;top:50px;background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:8px;min-width:220px;z-index:300;box-shadow:0 8px 32px rgba(0,0,0,0.5);">
+
+            <!-- Info de cuenta -->
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 10px 12px;border-bottom:1px solid var(--border);margin-bottom:8px">
+              <div id="menuAvatarMini" style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#ff6b6b,var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;border:2px solid var(--border2);overflow:hidden">
+                <span id="menuAvatarText">AD</span>
+              </div>
+              <div style="overflow:hidden">
+                <div id="menuDisplayName" style="font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</div>
+                <div id="menuDisplayEmail" style="font-size:10px;color:var(--text3);font-family:Space Mono,monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px">—</div>
+              </div>
+            </div>
+
+            <!-- Ir a configuración -->
+            <button onclick="document.getElementById('userMenu').classList.remove('open');nav('settings')" style="width:100%;padding:8px 10px;text-align:left;background:transparent;border:none;border-radius:7px;cursor:pointer;font-family:Syne,sans-serif;font-size:13px;font-weight:600;color:var(--text2);margin-bottom:4px;transition:background 0.15s" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='transparent'">
+              ⚙️ Configuración
+            </button>
+
+            <!-- Cerrar sesión -->
+            <button onclick="handleLogout()" style="width:100%;padding:8px 10px;text-align:left;background:rgba(255,107,107,0.08);border:1px solid rgba(255,107,107,0.2);border-radius:7px;cursor:pointer;font-family:Syne,sans-serif;font-size:13px;font-weight:700;color:#ff6b6b;margin-bottom:6px;">
+              🚪 Cerrar sesión
+            </button>
+
+            <!-- Eliminar cuenta -->
+            <button onclick="handleDeleteAccount()" style="width:100%;padding:8px 10px;text-align:left;background:rgba(255,107,107,0.04);border:1px solid rgba(255,107,107,0.1);border-radius:7px;cursor:pointer;font-family:Syne,sans-serif;font-size:12px;font-weight:700;color:#ff4444;">
+              🗑 Eliminar mi cuenta
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+    <style>#userMenu.open{display:block !important;animation:fadeUp 0.15s ease;}</style>
+
+    <!-- Stat cards -->
+    <div class="srow">
+      <div class="sc">
+        <div class="lbl">Horas Hoy</div>
+        <div class="val" style="color:var(--accent)" id="dHours">0</div>
+        <div class="ch up" id="dHoursC">—</div>
+        <div class="bb" style="background:linear-gradient(90deg,var(--accent),transparent)"></div>
+      </div>
+      <div class="sc">
+        <div class="lbl">Eficiencia</div>
+        <div class="val" style="color:var(--accent4)" id="dEff">0%</div>
+        <div class="ch up" id="dEffC">Sin datos aún</div>
+        <div class="bb" style="background:linear-gradient(90deg,var(--accent4),transparent)"></div>
+      </div>
+      <div class="sc">
+        <div class="lbl">Tareas</div>
+        <div class="val" style="color:var(--accent2)" id="dTasks">0/0</div>
+        <div class="ch up" id="dTasksC">—</div>
+        <div class="bb" style="background:linear-gradient(90deg,var(--accent2),transparent)"></div>
+      </div>
+      <div class="sc">
+        <div class="lbl">Exámenes</div>
+        <div class="val" style="color:var(--accent3)" id="dExams">0</div>
+        <div class="ch dn" id="dExamsC">—</div>
+        <div class="bb" style="background:linear-gradient(90deg,var(--accent3),transparent)"></div>
+      </div>
+    </div>
+
+    <div class="g21">
+      <div style="display:flex;flex-direction:column;gap:16px">
+
+        <!-- Horario de hoy -->
+        <div class="card">
+          <div class="sh">
+            <div class="ct"><div class="dot"></div>Horario de Hoy <span class="aitag">✦ IA</span></div>
+            <button class="sa" onclick="nav('schedule')">Ver semana →</button>
+          </div>
+          <div class="sg" id="dashSched"></div>
+        </div>
+
+        <!-- Productividad + Carga -->
+        <div class="card">
+          <div class="sh">
+            <div class="ct">
+              <div class="dot" style="background:var(--accent4);box-shadow:0 0 6px var(--accent4)"></div>
+              Productividad Semanal
+            </div>
+            <button class="sa" onclick="nav('stats')">Análisis →</button>
+          </div>
+          <div class="ca" id="prodChart"></div>
+          <div style="height:1px;background:var(--border);margin:16px 0"></div>
+          <div class="ct" style="margin-bottom:12px">
+            <div class="dot" style="background:var(--accent3);box-shadow:0 0 6px var(--accent3)"></div>
+            Carga Académica <span class="aitag">✦ PREDICCIÓN</span>
+          </div>
+          <div class="sbl" id="dashLoad"></div>
+        </div>
+      </div>
+
+      <!-- AI Chat -->
+      <div class="card" style="display:flex;flex-direction:column">
+        <div class="ct" style="margin-bottom:8px">
+          <div class="dot"></div>Asistente IA
+          <span style="margin-left:auto;font-size:9px;color:var(--accent4);letter-spacing:1px">● EN LÍNEA</span>
+        </div>
+        <div class="aip">
+          <div class="aipi">🔮</div>
+          <div class="aipt" id="aiPredText"><strong>Predicción IA:</strong> Analizando tu actividad académica...</div>
+        </div>
+        <div class="qc">
+          <div class="chip" onclick="sendQ('¿Cuánto debo estudiar hoy?')">⏱ ¿Cuánto estudiar?</div>
+          <div class="chip" onclick="sendQ('Optimiza mi horario')">✨ Optimizar</div>
+          <div class="chip" onclick="sendQ('¿Cómo va mi semana?')">📊 Mi semana</div>
+          <div class="chip" onclick="sendQ('Consejos para concentrarme')">🧠 Tips</div>
+        </div>
+        <div class="aimsg" id="chatBox"></div>
+        <div class="aiir">
+          <input class="aii" id="chatIn" placeholder="Pregunta a tu IA..." onkeydown="if(event.key==='Enter')sendMsg()" />
+          <button class="ais" onclick="sendMsg()">➤</button>
+        </div>
+      </div>
+    </div>
+  </div><!-- /dashboard -->
+
+
+  <!-- ──────────────── HORARIO ──────────────── -->
+  <div class="page" id="page-schedule">
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1>📅 <span>Horario</span></h1>
+        <p>GESTIÓN DE SESIONES DE ESTUDIO</p>
+      </div>
+      <div class="topbar-right">
+        <button class="btn bp" onclick="openAddSess()">+ Nueva Sesión</button>
+        <button class="fbtn" onclick="openFocusSel()">⚡ Enfocarme</button>
+      </div>
+    </header>
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="sh">
+        <div class="ct"><div class="dot"></div>Vista Semanal <span class="aitag">✦ IA</span></div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="btn bs bsm" onclick="chgWk(-1)">← Anterior</button>
+          <span id="wkLbl" style="font-family:'Space Mono',monospace;font-size:11px;color:var(--text2);min-width:120px;text-align:center"></span>
+          <button class="btn bs bsm" onclick="chgWk(1)">Siguiente →</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <div id="weekGrid" style="min-width:520px"></div>
+      </div>
+    </div>
+
+    <div class="g2">
+      <div class="card">
+        <div class="sh">
+          <div class="ct"><div class="dot"></div>Sesiones de Hoy</div>
+          <button class="btn bs bsm" onclick="autoSched()">✦ Auto-IA</button>
+        </div>
+        <div class="sg" id="todaySched"></div>
+        <div id="todayEmpty" style="text-align:center;color:var(--text3);font-family:'Space Mono',monospace;font-size:12px;padding:20px;display:none">
+          Sin sesiones hoy · ¡Agrega una! ➕
+        </div>
+      </div>
+      <div class="card">
+        <div class="ct">
+          <div class="dot" style="background:var(--accent2);box-shadow:0 0 6px var(--accent2)"></div>
+          Próximas Sesiones
+        </div>
+        <div class="sg" id="upcomSched"></div>
+      </div>
+    </div>
+  </div><!-- /schedule -->
+
+
+  <!-- ──────────────── MATERIAS ──────────────── -->
+  <div class="page" id="page-subjects">
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1>📚 <span>Materias</span></h1>
+        <p>GESTIÓN ACADÉMICA · PERÍODO 2025-II</p>
+      </div>
+      <div class="topbar-right">
+        <button class="btn bp" onclick="openAddSubj()">+ Agregar Materia</button>
+      </div>
+    </header>
+
+    <div class="g3" id="subjGrid" style="margin-bottom:16px"></div>
+
+    <div class="g2">
+      <div class="card">
+        <div class="ct">
+          <div class="dot" style="background:var(--accent3);box-shadow:0 0 6px var(--accent3)"></div>
+          Carga Estimada <span class="aitag">✦ PREDICCIÓN</span>
+        </div>
+        <div class="sbl" id="subjLoadFull"></div>
+      </div>
+      <div class="card">
+        <div class="ct">
+          <div class="dot" style="background:var(--accent4);box-shadow:0 0 6px var(--accent4)"></div>
+          Próximos Eventos
+        </div>
+        <div class="sg" id="subjEvents"></div>
+      </div>
+    </div>
+  </div><!-- /subjects -->
+
+
+  <!-- ──────────────── OBJETIVOS ──────────────── -->
+  <div class="page" id="page-objectives">
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1>🎯 <span>Objetivos</span></h1>
+        <p>METAS Y TAREAS ACADÉMICAS</p>
+      </div>
+      <div class="topbar-right">
+        <select class="fi" id="objFlt" style="width:140px;padding:8px 12px" onchange="renderObjs()">
+          <option value="all">Todos</option>
+          <option value="pending">Pendientes</option>
+          <option value="done">Completados</option>
+          <option value="high">Alta prioridad</option>
+        </select>
+        <button class="btn bp" onclick="openAddObj()">+ Nuevo Objetivo</button>
+      </div>
+    </header>
+
+    <div class="g2" style="margin-bottom:16px">
+      <div class="card">
+        <div class="ct"><div class="dot"></div>Pendientes</div>
+        <div class="ol" id="objPend"></div>
+        <div id="objEmpty" style="text-align:center;color:var(--text3);font-family:'Space Mono',monospace;font-size:12px;padding:20px;display:none">
+          ¡Sin pendientes! 🎉
+        </div>
+      </div>
+      <div class="card">
+        <div class="ct">
+          <div class="dot" style="background:var(--accent4);box-shadow:0 0 6px var(--accent4)"></div>
+          Completados
+        </div>
+        <div class="ol" id="objDone"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ct">
+        <div class="dot" style="background:var(--accent2);box-shadow:0 0 6px var(--accent2)"></div>
+        Resumen de Progreso
+      </div>
+      <div id="objProg" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px"></div>
+    </div>
+  </div><!-- /objectives -->
+
+
+  <!-- ──────────────── ESTADÍSTICAS ──────────────── -->
+  <div class="page" id="page-stats">
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1>📈 <span>Estadísticas</span></h1>
+        <p>ANÁLISIS DE PRODUCTIVIDAD</p>
+      </div>
+      <div class="topbar-right">
+        <select class="fi" id="stPer" style="width:130px;padding:8px 12px" onchange="renderStats()">
+          <option value="week">Esta semana</option>
+          <option value="month">Este mes</option>
+          <option value="semester">Semestre</option>
+        </select>
+      </div>
+    </header>
+
+    <div class="srow" style="margin-bottom:16px">
+      <div class="sc"><div class="lbl">Total Horas</div><div class="val" style="color:var(--accent)" id="stHrs">0</div><div class="ch up" id="stHrsC">—</div><div class="bb" style="background:linear-gradient(90deg,var(--accent),transparent)"></div></div>
+      <div class="sc"><div class="lbl">Promedio/día</div><div class="val" style="color:var(--accent4)" id="stAvg">0</div><div class="ch up">horas/día</div><div class="bb" style="background:linear-gradient(90deg,var(--accent4),transparent)"></div></div>
+      <div class="sc"><div class="lbl">Obj. Cumplidos</div><div class="val" style="color:var(--accent2)" id="stObj">0</div><div class="ch up" id="stObjC">—</div><div class="bb" style="background:linear-gradient(90deg,var(--accent2),transparent)"></div></div>
+      <div class="sc"><div class="lbl">Racha</div><div class="val" style="color:var(--accent3)" id="stStrk">12</div><div class="ch up">días activos 🔥</div><div class="bb" style="background:linear-gradient(90deg,var(--accent3),transparent)"></div></div>
+    </div>
+
+    <div class="g2" style="gap:16px;margin-bottom:16px">
+      <div class="card">
+        <div class="ct"><div class="dot"></div>Horas por Día</div>
+        <div class="ca" id="stChart" style="height:130px"></div>
+      </div>
+      <div class="card">
+        <div class="ct">
+          <div class="dot" style="background:var(--accent2);box-shadow:0 0 6px var(--accent2)"></div>
+          Por Materia
+        </div>
+        <div id="subjBreak" style="display:flex;flex-direction:column;gap:10px"></div>
+      </div>
+    </div>
+
+    <div class="g2">
+      <div class="card">
+        <div class="ct">
+          <div class="dot" style="background:var(--accent4);box-shadow:0 0 6px var(--accent4)"></div>
+          Mapa de Calor — 28 días
+        </div>
+        <div class="hmlbl" id="hmLbl"></div>
+        <div class="hmg" id="hmap" style="margin-top:6px"></div>
+      </div>
+      <div class="card">
+        <div class="ct">
+          <div class="dot" style="background:var(--accent3);box-shadow:0 0 6px var(--accent3)"></div>
+          Indicadores Clave
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px" id="kpiList"></div>
+      </div>
+    </div>
+  </div><!-- /stats -->
+
+
+  <!-- ──────────────── CONFIGURACIÓN ──────────────── -->
+  <div class="page" id="page-settings">
+    <header class="topbar">
+      <div class="topbar-left"><h1>⚙️ <span>Configuración</span></h1><p>PREFERENCIAS Y PERFIL</p></div>
+      <div class="topbar-right"><button class="btn bp" onclick="saveAllSettings()">💾 Guardar cambios</button></div>
+    </header>
+
+    <div class="g2" style="gap:16px;margin-bottom:16px">
+
+      <!-- PERFIL -->
+      <div class="card">
+        <div class="ct"><div class="dot"></div>Perfil</div>
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px">
+          <div id="settingsAvatar" style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#ff6b6b,var(--accent2));display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;border:3px solid var(--border2);flex-shrink:0;cursor:pointer;position:relative" onclick="document.getElementById('avatarInput').click()">
+            <span id="settingsAvatarText">AD</span>
+            <div style="position:absolute;bottom:0;right:0;width:20px;height:20px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px">✏️</div>
+          </div>
+          <input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="previewAvatar(this)"/>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:700" id="settingsNameDisplay">—</div>
+            <div style="font-size:11px;color:var(--text3);font-family:Space Mono,monospace;margin-top:2px" id="settingsEmailDisplay">—</div>
+          </div>
+        </div>
+        <div class="fr"><div class="fl">Nombre completo</div><input class="fi" id="cfgName" placeholder="Tu nombre"/></div>
+        <div class="fr"><div class="fl">Universidad / Institución</div><input class="fi" id="cfgUniversity" placeholder="Ej: Universidad del Norte"/></div>
+        <div class="fr"><div class="fl">Semestre actual</div>
+          <select class="fse" id="cfgSemester">
+            <option value="1">1° Semestre</option><option value="2">2° Semestre</option>
+            <option value="3">3° Semestre</option><option value="4">4° Semestre</option>
+            <option value="5">5° Semestre</option><option value="6">6° Semestre</option>
+            <option value="7">7° Semestre</option><option value="8">8° Semestre</option>
+            <option value="9">9° Semestre</option><option value="10">10° Semestre</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- POMODORO -->
+      <div class="card">
+        <div class="ct"><div class="dot" style="background:var(--accent2);box-shadow:0 0 6px var(--accent2)"></div>Técnica Pomodoro</div>
+        <div class="fr"><div class="fl">Duración de sesión (minutos)</div>
+          <input class="fi" type="range" id="cfgPomoDur" min="10" max="90" value="25" oninput="document.getElementById('cfgPomoDurVal').textContent=this.value+' min'"/>
+          <div style="text-align:right;font-family:Space Mono,monospace;font-size:12px;color:var(--accent);margin-top:4px" id="cfgPomoDurVal">25 min</div>
+        </div>
+        <div class="fr"><div class="fl">Descanso corto (minutos)</div>
+          <input class="fi" type="range" id="cfgPomoBreak" min="3" max="15" value="5" oninput="document.getElementById('cfgPomoBreakVal').textContent=this.value+' min'"/>
+          <div style="text-align:right;font-family:Space Mono,monospace;font-size:12px;color:var(--accent4);margin-top:4px" id="cfgPomoBreakVal">5 min</div>
+        </div>
+        <div class="fr"><div class="fl">Descanso largo (minutos)</div>
+          <input class="fi" type="range" id="cfgPomoLong" min="10" max="30" value="15" oninput="document.getElementById('cfgPomoLongVal').textContent=this.value+' min'"/>
+          <div style="text-align:right;font-family:Space Mono,monospace;font-size:12px;color:var(--accent3);margin-top:4px" id="cfgPomoLongVal">15 min</div>
+        </div>
+        <div class="fr"><div class="fl">Sesiones antes del descanso largo</div>
+          <select class="fse" id="cfgPomoRounds">
+            <option value="2">2 sesiones</option><option value="3">3 sesiones</option>
+            <option value="4" selected>4 sesiones (recomendado)</option><option value="5">5 sesiones</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="g2" style="gap:16px;margin-bottom:16px">
+
+      <!-- META SEMANAL -->
+      <div class="card">
+        <div class="ct"><div class="dot" style="background:var(--accent4);box-shadow:0 0 6px var(--accent4)"></div>Meta Semanal de Estudio</div>
+        <div class="fr"><div class="fl">Horas de estudio por semana</div>
+          <input class="fi" type="range" id="cfgWeeklyGoal" min="5" max="60" value="30" oninput="document.getElementById('cfgWeeklyGoalVal').textContent=this.value+'h / semana'"/>
+          <div style="text-align:right;font-family:Space Mono,monospace;font-size:12px;color:var(--accent4);margin-top:4px" id="cfgWeeklyGoalVal">30h / semana</div>
+        </div>
+        <div class="fr"><div class="fl">Días de estudio por semana</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px" id="cfgStudyDays">
+            <button class="day-btn active" data-day="0" onclick="toggleDay(this)">L</button>
+            <button class="day-btn active" data-day="1" onclick="toggleDay(this)">M</button>
+            <button class="day-btn active" data-day="2" onclick="toggleDay(this)">X</button>
+            <button class="day-btn active" data-day="3" onclick="toggleDay(this)">J</button>
+            <button class="day-btn active" data-day="4" onclick="toggleDay(this)">V</button>
+            <button class="day-btn" data-day="5" onclick="toggleDay(this)">S</button>
+            <button class="day-btn" data-day="6" onclick="toggleDay(this)">D</button>
+          </div>
+        </div>
+        <div class="fr"><div class="fl">Hora preferida para estudiar</div>
+          <select class="fse" id="cfgPeakHour">
+            <option value="morning">🌅 Mañana (6am – 12pm)</option>
+            <option value="afternoon">☀️ Tarde (12pm – 6pm)</option>
+            <option value="evening">🌙 Noche (6pm – 12am)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- NOTIFICACIONES -->
+      <div class="card">
+        <div class="ct"><div class="dot" style="background:var(--accent3);box-shadow:0 0 6px var(--accent3)"></div>Notificaciones</div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div><div style="font-size:13px;font-weight:700">Recordatorio de sesiones</div><div style="font-size:11px;color:var(--text3);font-family:Space Mono,monospace">Aviso 15 min antes</div></div>
+            <label class="toggle-wrap"><input type="checkbox" id="cfgNotifSessions" checked/><span class="toggle-track2"></span></label>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div><div style="font-size:13px;font-weight:700">Alerta de exámenes</div><div style="font-size:11px;color:var(--text3);font-family:Space Mono,monospace">2 días antes</div></div>
+            <label class="toggle-wrap"><input type="checkbox" id="cfgNotifExams" checked/><span class="toggle-track2"></span></label>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div><div style="font-size:13px;font-weight:700">Recordatorio de racha</div><div style="font-size:11px;color:var(--text3);font-family:Space Mono,monospace">Si no has estudiado hoy</div></div>
+            <label class="toggle-wrap"><input type="checkbox" id="cfgNotifStreak" checked/><span class="toggle-track2"></span></label>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div><div style="font-size:13px;font-weight:700">Resumen semanal</div><div style="font-size:11px;color:var(--text3);font-family:Space Mono,monospace">Cada domingo</div></div>
+            <label class="toggle-wrap"><input type="checkbox" id="cfgNotifWeekly"/><span class="toggle-track2"></span></label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="g2" style="gap:16px">
+
+      <!-- TEMA VISUAL -->
+      <div class="card">
+        <div class="ct"><div class="dot" style="background:var(--accent2);box-shadow:0 0 6px var(--accent2)"></div>Tema Visual</div>
+        <div class="fr"><div class="fl">Modo</div>
+          <div style="display:flex;gap:10px;margin-top:4px">
+            <div class="theme-opt active" id="themeDark" onclick="setTheme('dark')" style="flex:1;padding:12px;border-radius:10px;background:#070b14;border:2px solid var(--accent);cursor:pointer;text-align:center">
+              <div style="font-size:18px">🌙</div>
+              <div style="font-size:12px;font-weight:700;color:#e8eef8;margin-top:4px">Oscuro</div>
+            </div>
+            <div class="theme-opt" id="themeLight" onclick="setTheme('light')" style="flex:1;padding:12px;border-radius:10px;background:#f0f4ff;border:2px solid transparent;cursor:pointer;text-align:center">
+              <div style="font-size:18px">☀️</div>
+              <div style="font-size:12px;font-weight:700;color:#1a2040;margin-top:4px">Claro</div>
+            </div>
+          </div>
+        </div>
+        <div class="fr"><div class="fl">Color de acento</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px" id="accentPicker">
+            <div class="accent-opt active" data-color="#00d4ff" onclick="setAccent(this,'#00d4ff','rgba(0,212,255,0.15)')" style="width:32px;height:32px;border-radius:50%;background:#00d4ff;cursor:pointer;border:3px solid #fff"></div>
+            <div class="accent-opt" data-color="#7b5fff" onclick="setAccent(this,'#7b5fff','rgba(123,95,255,0.15)')" style="width:32px;height:32px;border-radius:50%;background:#7b5fff;cursor:pointer;border:3px solid transparent"></div>
+            <div class="accent-opt" data-color="#00ff9d" onclick="setAccent(this,'#00ff9d','rgba(0,255,157,0.15)')" style="width:32px;height:32px;border-radius:50%;background:#00ff9d;cursor:pointer;border:3px solid transparent"></div>
+            <div class="accent-opt" data-color="#ff6b6b" onclick="setAccent(this,'#ff6b6b','rgba(255,107,107,0.15)')" style="width:32px;height:32px;border-radius:50%;background:#ff6b6b;cursor:pointer;border:3px solid transparent"></div>
+            <div class="accent-opt" data-color="#ffb700" onclick="setAccent(this,'#ffb700','rgba(255,183,0,0.15)')" style="width:32px;height:32px;border-radius:50%;background:#ffb700;cursor:pointer;border:3px solid transparent"></div>
+            <div class="accent-opt" data-color="#ff9f43" onclick="setAccent(this,'#ff9f43','rgba(255,159,67,0.15)')" style="width:32px;height:32px;border-radius:50%;background:#ff9f43;cursor:pointer;border:3px solid transparent"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EXPORTAR DATOS -->
+      <div class="card">
+        <div class="ct"><div class="dot" style="background:var(--accent4);box-shadow:0 0 6px var(--accent4)"></div>Exportar Datos</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;display:flex;justify-content:space-between;align-items:center">
+            <div><div style="font-size:13px;font-weight:700">Materias y progreso</div><div style="font-size:11px;color:var(--text3);font-family:Space Mono,monospace">CSV con todas tus materias</div></div>
+            <button class="btn bs bsm" onclick="exportData('subjects')">⬇ CSV</button>
+          </div>
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;display:flex;justify-content:space-between;align-items:center">
+            <div><div style="font-size:13px;font-weight:700">Sesiones de estudio</div><div style="font-size:11px;color:var(--text3);font-family:Space Mono,monospace">CSV con todo tu horario</div></div>
+            <button class="btn bs bsm" onclick="exportData('sessions')">⬇ CSV</button>
+          </div>
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;display:flex;justify-content:space-between;align-items:center">
+            <div><div style="font-size:13px;font-weight:700">Objetivos y tareas</div><div style="font-size:11px;color:var(--text3);font-family:Space Mono,monospace">CSV con todos tus objetivos</div></div>
+            <button class="btn bs bsm" onclick="exportData('objectives')">⬇ CSV</button>
+          </div>
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;display:flex;justify-content:space-between;align-items:center">
+            <div><div style="font-size:13px;font-weight:700">Todo mis datos</div><div style="font-size:11px;color:var(--text3);font-family:Space Mono,monospace">JSON completo de tu perfil</div></div>
+            <button class="btn bp bsm" onclick="exportData('all')">⬇ JSON</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /settings -->
+
+</main><!-- /main -->
+
+
+<!-- ═══════════════════════════
+     MODALES
+     ═══════════════════════════ -->
+
+<!-- Modal: Nueva Sesión -->
+<div class="mo" id="mSess">
+  <div class="md">
+    <div class="mh">
+      <span class="mtit">Nueva Sesión de Estudio</span>
+      <button class="mc" onclick="closeMo('mSess')">×</button>
+    </div>
+    <div class="fr"><div class="fl">Materia</div><select class="fse" id="sSubj"></select></div>
+    <div class="fri">
+      <div class="fr">
+        <div class="fl">Día</div>
+        <select class="fse" id="sDay">
+          <option value="0">Lunes</option><option value="1">Martes</option>
+          <option value="2">Miércoles</option><option value="3">Jueves</option>
+          <option value="4">Viernes</option><option value="5">Sábado</option>
+          <option value="6">Domingo</option>
+        </select>
+      </div>
+      <div class="fr"><div class="fl">Hora</div><input class="fi" type="time" id="sTime" value="08:00" /></div>
+    </div>
+    <div class="fr"><div class="fl">Actividad</div><input class="fi" id="sType" placeholder="Ej: Estudio de teoría, Ejercicios..." /></div>
+    <div class="fr">
+      <div class="fl">Prioridad</div>
+      <select class="fse" id="sPrio">
+        <option value="high">🔴 Alta — Urgente</option>
+        <option value="med">🔵 Media — Normal</option>
+        <option value="low">🟢 Baja — Flexible</option>
+      </select>
+    </div>
+    <div class="mf">
+      <button class="btn bs" onclick="closeMo('mSess')">Cancelar</button>
+      <button class="btn bp" onclick="saveSess()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Nueva Materia -->
+<div class="mo" id="mSubj">
+  <div class="md">
+    <div class="mh">
+      <span class="mtit">Nueva Materia</span>
+      <button class="mc" onclick="closeMo('mSubj')">×</button>
+    </div>
+    <div class="fr"><div class="fl">Nombre</div><input class="fi" id="sjName" placeholder="Ej: Cálculo Diferencial" /></div>
+    <div class="fr"><div class="fl">Profesor</div><input class="fi" id="sjTeach" placeholder="Ej: Dr. García" /></div>
+    <div class="fri">
+      <div class="fr"><div class="fl">Créditos</div><input class="fi" type="number" id="sjCred" value="3" min="1" max="8" /></div>
+      <div class="fr"><div class="fl">Nota actual</div><input class="fi" type="number" id="sjGrade" value="3.5" min="0" max="5" step="0.1" /></div>
+    </div>
+    <div class="fr"><div class="fl">Próximo evento</div><input class="fi" id="sjNext" placeholder="Ej: Examen parcial" /></div>
+    <div class="fr"><div class="fl">Fecha del evento</div><input class="fi" type="date" id="sjDate" /></div>
+    <div class="fr"><div class="fl">Color</div><div class="cr" id="colorPick"></div></div>
+    <div class="mf">
+      <button class="btn bs" onclick="closeMo('mSubj')">Cancelar</button>
+      <button class="btn bp" onclick="saveSubj()">Agregar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Nuevo Objetivo -->
+<div class="mo" id="mObj">
+  <div class="md">
+    <div class="mh">
+      <span class="mtit">Nuevo Objetivo</span>
+      <button class="mc" onclick="closeMo('mObj')">×</button>
+    </div>
+    <div class="fr"><div class="fl">Título</div><input class="fi" id="ojTitle" placeholder="Ej: Completar capítulo 5 de Cálculo" /></div>
+    <div class="fr"><div class="fl">Descripción</div><textarea class="fte" id="ojDesc" placeholder="Detalles..."></textarea></div>
+    <div class="fri">
+      <div class="fr"><div class="fl">Materia</div><select class="fse" id="ojSubj"></select></div>
+      <div class="fr"><div class="fl">Fecha límite</div><input class="fi" type="date" id="ojDate" /></div>
+    </div>
+    <div class="fr">
+      <div class="fl">Prioridad</div>
+      <select class="fse" id="ojPrio">
+        <option value="high">🔴 Alta</option>
+        <option value="med">🔵 Media</option>
+        <option value="low">🟢 Baja</option>
+      </select>
+    </div>
+    <div class="mf">
+      <button class="btn bs" onclick="closeMo('mObj')">Cancelar</button>
+      <button class="btn bp" onclick="saveObj()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Selector Focus -->
+<div class="mo" id="mFocus">
+  <div class="md" style="max-width:380px">
+    <div class="mh">
+      <span class="mtit">⚡ Iniciar Concentración</span>
+      <button class="mc" onclick="closeMo('mFocus')">×</button>
+    </div>
+    <div class="fr"><div class="fl">¿Qué vas a estudiar?</div><select class="fse" id="fSubSel"></select></div>
+    <div class="fr">
+      <div class="fl">Duración</div>
+      <select class="fse" id="fDur">
+        <option value="25">25 min — Estándar</option>
+        <option value="45">45 min — Largo</option>
+        <option value="60">60 min — Maratón</option>
+        <option value="15">15 min — Rápido</option>
+      </select>
+    </div>
+    <div class="mf">
+      <button class="btn bs" onclick="closeMo('mFocus')">Cancelar</button>
+      <button class="btn bp" onclick="startFocusMo()">🚀 ¡Empezar!</button>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Modal: Confirmar eliminación de cuenta -->
+<div class="mo" id="mDeleteAccount">
+  <div class="md" style="max-width:400px">
+    <div class="mh">
+      <span class="mtit" style="color:#ff6b6b">⚠️ Eliminar cuenta</span>
+      <button class="mc" onclick="closeMo('mDeleteAccount')">×</button>
+    </div>
+    <div style="background:rgba(255,107,107,0.08);border:1px solid rgba(255,107,107,0.2);border-radius:10px;padding:14px;margin-bottom:16px;">
+      <p style="font-size:13px;line-height:1.6;color:var(--text2)">
+        Esta acción es <strong style="color:#ff6b6b">permanente e irreversible</strong>.<br><br>
+        Se eliminarán todos tus datos: materias, sesiones, objetivos, estadísticas y tu cuenta de acceso.
+      </p>
+    </div>
+    <div class="fr">
+      <div class="fl">Escribe tu correo para confirmar</div>
+      <input class="fi" id="deleteConfirmEmail" type="email" placeholder="tucorreo@ejemplo.com" />
+    </div>
+    <div class="mf">
+      <button class="btn bs" onclick="closeMo('mDeleteAccount')">Cancelar</button>
+      <button class="btn" onclick="confirmDeleteAccount()" style="background:linear-gradient(135deg,#ff6b6b,#cc3333);color:#fff;box-shadow:0 0 16px rgba(255,107,107,0.3)">
+        Eliminar permanentemente
+      </button>
+    </div>
+  </div>
+</div>
+<!-- ═══════════════════════════
+     FOCUS OVERLAY
+     ═══════════════════════════ -->
+<div class="fo" id="focusOv">
+  <div class="fpart" id="fparts"></div>
+  <div style="text-align:center;position:relative">
+    <p class="fsub"  id="fSubLbl">Cálculo Diferencial</p>
+    <p class="fsub2">Modo Concentración · Distracciones bloqueadas</p>
+    <div class="fring">
+      <div class="fri2">
+        <div class="ftime" id="fTimer">25:00</div>
+        <div class="flbl"  id="fMode">POMODORO</div>
+      </div>
+    </div>
+    <div class="fctrl">
+      <button class="fbc fpa" id="fPauseBtn" onclick="togglePause()">⏸ Pausar</button>
+      <button class="fbc fen" onclick="endFocus()">✕ Terminar</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════
+     TOAST
+     ═══════════════════════════ -->
+<div class="toast" id="toast">
+  <span id="toastMsg"></span>
+</div>
+
+
+<!-- ═══════════════════════════
+     SCRIPTS (orden de dependencias)
+     ═══════════════════════════ -->
+<script src="js/state.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/modals.js"></script>
+<script src="js/navigation.js"></script>
+<script src="js/chat.js"></script>
+<script src="js/focus.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/schedule.js"></script>
+<script src="js/subjects.js"></script>
+<script src="js/objectives.js"></script>
+<script src="js/stats.js"></script>
+<script src="js/db-sync.js"></script>
+<script src="js/settings.js"></script>
+
+<!-- Auth guard + carga de datos desde Firebase -->
+<script type="module">
+  import {
+    onAuthChange, logout, deleteAccount, loadUserData, subscribeUserData,
+    saveSubject,    deleteSubject    as fbDelSubject,
+    saveSession,    deleteSession    as fbDelSession,    updateSession,
+    saveObjective,  deleteObjective  as fbDelObjective,  updateObjective,
+    saveStreak,
+  } from './js/firebase.js';
+
+  // ── Guard: redirige al login si no hay sesión ──
+  onAuthChange(async user => {
+    if (!user) {
+      window.location.href = 'login.html';
+      return;
+    }
+
+    // Muestra nombre e iniciales del usuario
+    const initials = user.displayName
+      ? user.displayName.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase()
+      : user.email.slice(0,2).toUpperCase();
+    document.querySelector('.avatar').textContent = initials;
+
+    // Exponer usuario y funciones FB para db-sync.js
+    window._currentUser = user;
+    window._authUser = user; // referencia para delete account
+
+    // Llenar info del menú de usuario
+    const displayName = user.displayName || 'Estudiante';
+    const email       = user.email || '';
+    document.getElementById('menuDisplayName').textContent  = displayName;
+    document.getElementById('menuDisplayEmail').textContent = email;
+    document.getElementById('menuAvatarText').textContent   = initials;
+
+    // Sincronizar avatar del menú con foto guardada
+    const savedAvatar = localStorage.getItem('studyflow_avatar');
+    if (savedAvatar) {
+      const miniAv = document.getElementById('menuAvatarMini');
+      miniAv.style.backgroundImage    = `url(${savedAvatar})`;
+      miniAv.style.backgroundSize     = 'cover';
+      miniAv.style.backgroundPosition = 'center';
+      document.getElementById('menuAvatarText').style.display = 'none';
+    }
+    window._FB = {
+      saveSubject:    (uid, s)    => saveSubject(uid, s),
+      deleteSubject:  (uid, id)   => deleteSubject(uid, id),
+      saveSession:    (uid, s)    => saveSession(uid, s),
+      deleteSession:  (uid, id)   => deleteSession(uid, id),
+      updateSession:  (uid, id,d) => updateSession(uid, id, d),
+      saveObjective:  (uid, o)    => saveObjective(uid, o),
+      deleteObjective:(uid, id)   => deleteObjective(uid, id),
+      updateObjective:(uid, id,d) => updateObjective(uid, id, d),
+      saveStreak:     (uid, n)    => saveStreak(uid, n),
+    };
+
+    // Carga datos del usuario desde Realtime Database
+    const data = await loadUserData(user.uid);
+    if (data) {
+      // Hidrata el State global con los datos de Firebase
+      if (data.subjects)     State.subjects    = Object.values(data.subjects);
+      if (data.sessions)     State.sessions    = Object.values(data.sessions);
+      if (data.objectives)   State.objectives  = Object.values(data.objectives);
+      if (data.profile)      State.streak      = data.profile.streak || 0;
+      if (data.productivity) {
+        const days = ['L','M','X','J','V','S','D'];
+        State.productivity = days.map(d => ({ day:d, hrs: data.productivity[d] || 0 }));
+      }
+    }
+
+    // Aplica tema y configuración guardada
+    applyStoredSettings();
+
+    // Arranca la app
+    populateSubjectSelects();
+    renderChat();
+    initChatWithUser(user.displayName);
+    refreshDash();
+
+    // ── Escucha cambios en tiempo real ──
+    subscribeUserData(user.uid, newData => {
+      if (!newData) return;
+      if (newData.subjects)   State.subjects   = Object.values(newData.subjects);
+      if (newData.sessions)   State.sessions   = Object.values(newData.sessions);
+      if (newData.objectives) State.objectives = Object.values(newData.objectives);
+    });
+  });
+
+  // ── Logout ────────────────────────────────
+  window.handleLogout = async function() {
+    await logout();
+    window.location.href = 'login.html';
+  };
+
+  // ── Abrir modal eliminar cuenta ────────────
+  window.handleDeleteAccount = function() {
+    document.getElementById('deleteConfirmEmail').value = '';
+    // Cerrar menú de usuario
+    document.getElementById('userMenu').classList.remove('open');
+    openMo('mDeleteAccount');
+  };
+
+  // ── Confirmar y ejecutar eliminación ───────
+  window.confirmDeleteAccount = async function() {
+    const inputEmail = document.getElementById('deleteConfirmEmail').value.trim().toLowerCase();
+    const userEmail  = window._authUser?.email?.toLowerCase() || '';
+
+    if (inputEmail !== userEmail) {
+      document.getElementById('deleteConfirmEmail').style.border = '1px solid #ff6b6b';
+      document.getElementById('deleteConfirmEmail').placeholder  = '❌ Correo incorrecto';
+      return;
+    }
+
+    const btn = document.querySelector('#mDeleteAccount .btn:last-child');
+    btn.textContent = 'Eliminando...';
+    btn.disabled = true;
+
+    try {
+      const uid = window._authUser.uid;
+      await deleteAccount(uid);
+      window.location.href = 'login.html';
+    } catch (err) {
+      console.error('Error eliminando cuenta:', err);
+      if (err.code === 'auth/requires-recent-login') {
+        closeMo('mDeleteAccount');
+        showToast('⚠️ Por seguridad, cierra sesión, vuelve a entrar e intenta de nuevo');
+      } else {
+        showToast('❌ Error al eliminar: ' + err.message);
+      }
+      btn.textContent = 'Eliminar permanentemente';
+      btn.disabled = false;
+    }
+  };
+
+  // ── Sync helpers (llámales desde los módulos JS) ──
+  window.FB = {
+    uid: () => {
+      const { getAuth } = window._fbAuth || {};
+      return getAuth ? getAuth().currentUser?.uid : null;
+    },
+    saveSubject:   (s)    => { const u=_uid(); if(u) saveSubject(u, s);    },
+    delSubject:    (id)   => { const u=_uid(); if(u) fbDelSubject(u, id);  },
+    saveSession:   (s)    => { const u=_uid(); if(u) saveSession(u, s);    },
+    delSession:    (id)   => { const u=_uid(); if(u) fbDelSession(u, id);  },
+    updSession:    (id,d) => { const u=_uid(); if(u) updateSession(u,id,d);},
+    saveObjective: (o)    => { const u=_uid(); if(u) saveObjective(u, o);  },
+    delObjective:  (id)   => { const u=_uid(); if(u) fbDelObjective(u,id); },
+    updObjective:  (id,d) => { const u=_uid(); if(u) updateObjective(u,id,d);},
+    saveStreak:    (n)    => { const u=_uid(); if(u) saveStreak(u, n);     },
+  };
+
+  function _uid() {
+    // Importado dinámicamente para no crear dependencia circular
+    return document.querySelector('.avatar')?.dataset?.uid || null;
+  }
+</script>
+
+</body>
+</html>

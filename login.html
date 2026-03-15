@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StudyFlow AI — Iniciar sesión</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/login.css" />
+</head>
+<body>
+
+<div class="auth-particles" id="authParticles"></div>
+
+<div class="auth-page">
+  <div class="auth-card">
+
+    <div class="auth-brand">
+      <div class="auth-logo">SF</div>
+      <div class="auth-brand-text">
+        <h1>StudyFlow <span>AI</span></h1>
+        <p>ORGANIZACIÓN ACADÉMICA INTELIGENTE</p>
+      </div>
+    </div>
+
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="tabLogin">Iniciar sesión</div>
+      <div class="auth-tab" id="tabRegister">Crear cuenta</div>
+    </div>
+
+    <div class="auth-error" id="authError"></div>
+    <div class="auth-success" id="authSuccess"></div>
+
+    <!-- FORMULARIO LOGIN -->
+    <form class="auth-form" id="formLogin">
+      <div class="auth-field">
+        <label class="auth-label">Correo electrónico</label>
+        <div class="auth-input-wrap">
+          <span class="auth-input-icon">✉️</span>
+          <input class="auth-input" id="loginEmail" type="email" placeholder="tucorreo@universidad.edu" autocomplete="email" required />
+        </div>
+      </div>
+      <div class="auth-field">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <label class="auth-label">Contraseña</label>
+          <button type="button" class="auth-forgot" id="btnForgot">¿Olvidaste tu contraseña?</button>
+        </div>
+        <div class="auth-input-wrap">
+          <span class="auth-input-icon">🔒</span>
+          <input class="auth-input" id="loginPassword" type="password" placeholder="••••••••" autocomplete="current-password" required />
+        </div>
+      </div>
+      <button type="submit" class="auth-btn" id="btnLogin">
+        <span class="btn-text">Entrar a StudyFlow</span>
+        <div class="btn-spinner"></div>
+      </button>
+    </form>
+
+    <!-- FORMULARIO REGISTRO -->
+    <form class="auth-form" id="formRegister" style="display:none">
+      <div class="auth-field">
+        <label class="auth-label">Nombre completo</label>
+        <div class="auth-input-wrap">
+          <span class="auth-input-icon">👤</span>
+          <input class="auth-input" id="regName" type="text" placeholder="Andrea López" autocomplete="name" required />
+        </div>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Correo electrónico</label>
+        <div class="auth-input-wrap">
+          <span class="auth-input-icon">✉️</span>
+          <input class="auth-input" id="regEmail" type="email" placeholder="tucorreo@universidad.edu" autocomplete="email" required />
+        </div>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Contraseña</label>
+        <div class="auth-input-wrap">
+          <span class="auth-input-icon">🔒</span>
+          <input class="auth-input" id="regPassword" type="password" placeholder="Mínimo 8 caracteres" minlength="8" required />
+        </div>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Confirmar contraseña</label>
+        <div class="auth-input-wrap">
+          <span class="auth-input-icon">🔒</span>
+          <input class="auth-input" id="regConfirm" type="password" placeholder="Repite tu contraseña" required />
+        </div>
+      </div>
+      <button type="submit" class="auth-btn" id="btnRegister">
+        <span class="btn-text">Crear mi cuenta</span>
+        <div class="btn-spinner"></div>
+      </button>
+    </form>
+
+    <div class="auth-divider"><span>o continúa con</span></div>
+
+    <div class="oauth-row">
+      <button class="oauth-btn" id="btnGoogle" title="Google">
+        <svg viewBox="0 0 24 24" fill="none" style="width:18px;height:18px">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+        </svg>
+        <span>Google</span>
+      </button>
+      <button class="oauth-btn" id="btnGithub" title="GitHub">
+        <svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px">
+          <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+        </svg>
+        <span>GitHub</span>
+      </button>
+    </div>
+
+    <div class="auth-footer">
+      Al continuar aceptas los <a>Términos de servicio</a> y la <a>Política de privacidad</a>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+  import { registerEmail, loginEmail, loginGoogle, loginGithub, onAuthChange } from './js/firebase.js';
+
+  // Redirigir si ya hay sesión
+  onAuthChange(user => {
+    if (user) window.location.href = 'index.html';
+  });
+
+  function init() {
+
+  // Helpers UI
+  const $ = id => document.getElementById(id);
+  function setLoading(id, on) { const b=$(id); b.classList.toggle('loading',on); b.disabled=on; }
+  function showError(msg) { $('authError').textContent=msg; $('authError').classList.add('show'); $('authSuccess').classList.remove('show'); }
+  function showSuccess(msg) { $('authSuccess').textContent=msg; $('authSuccess').classList.add('show'); $('authError').classList.remove('show'); }
+  function clearMsg() { $('authError').classList.remove('show'); $('authSuccess').classList.remove('show'); }
+
+  const ERRS = {
+    'auth/user-not-found':        'No existe una cuenta con ese correo.',
+    'auth/wrong-password':        'Contraseña incorrecta.',
+    'auth/invalid-credential':    'Correo o contraseña incorrectos.',
+    'auth/email-already-in-use':  'Ya existe una cuenta con ese correo.',
+    'auth/weak-password':         'La contraseña debe tener al menos 8 caracteres.',
+    'auth/invalid-email':         'El correo no es válido.',
+    'auth/too-many-requests':     'Demasiados intentos. Espera unos minutos.',
+    'auth/popup-closed-by-user':  'Cerraste la ventana de login.',
+  };
+  const fErr = e => ERRS[e.code] || ('Error: ' + e.message);
+
+  // Tabs
+  $('tabLogin').addEventListener('click', () => {
+    $('tabLogin').classList.add('active');
+    $('tabRegister').classList.remove('active');
+    $('formLogin').style.display = 'flex';
+    $('formRegister').style.display = 'none';
+    clearMsg();
+  });
+  $('tabRegister').addEventListener('click', () => {
+    $('tabRegister').classList.add('active');
+    $('tabLogin').classList.remove('active');
+    $('formRegister').style.display = 'flex';
+    $('formLogin').style.display = 'none';
+    clearMsg();
+  });
+
+  // Login
+  $('formLogin').addEventListener('submit', async e => {
+    e.preventDefault(); clearMsg();
+    setLoading('btnLogin', true);
+    try {
+      await loginEmail($('loginEmail').value.trim(), $('loginPassword').value);
+      showSuccess('¡Bienvenida! Redirigiendo...');
+      setTimeout(() => window.location.href = 'index.html', 800);
+    } catch(err) { showError(fErr(err)); setLoading('btnLogin', false); }
+  });
+
+  // Registro
+  $('formRegister').addEventListener('submit', async e => {
+    e.preventDefault(); clearMsg();
+    const pw = $('regPassword').value;
+    if (pw !== $('regConfirm').value) { showError('Las contraseñas no coinciden.'); return; }
+    setLoading('btnRegister', true);
+    console.log('📝 Intentando registrar usuario...');
+    try {
+      await registerEmail($('regName').value.trim(), $('regEmail').value.trim(), pw);
+      showSuccess('¡Cuenta creada! Redirigiendo...');
+      setTimeout(() => window.location.href = 'index.html', 800);
+    } catch(err) { showError(fErr(err)); setLoading('btnRegister', false); }
+  });
+
+  // Google
+  $('btnGoogle').addEventListener('click', async () => {
+    clearMsg();
+    try { await loginGoogle(); window.location.href = 'index.html'; }
+    catch(e) { showError(fErr(e)); }
+  });
+
+  // GitHub
+  $('btnGithub').addEventListener('click', async () => {
+    clearMsg();
+    try { await loginGithub(); window.location.href = 'index.html'; }
+    catch(e) { showError(fErr(e)); }
+  });
+
+  // Olvidé contraseña
+  $('btnForgot').addEventListener('click', async () => {
+    const email = $('loginEmail').value.trim();
+    if (!email) { showError('Escribe tu correo primero.'); return; }
+    try {
+      const { sendPasswordResetEmail, getAuth } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
+      await sendPasswordResetEmail(getAuth(), email);
+      showSuccess('Enlace enviado a ' + email);
+    } catch(e) { showError(fErr(e)); }
+  });
+
+  // Partículas
+  const c = $('authParticles');
+  ['#00d4ff','#7b5fff','#00ff9d','#ff6b6b'].forEach(col => {
+    for(let i=0;i<5;i++){
+      const p = document.createElement('div');
+      p.className = 'auth-particle';
+      const sz = 4 + Math.random()*8;
+      p.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;background:${col};--dur:${3+Math.random()*5}s;animation-delay:${Math.random()*4}s;opacity:${0.1+Math.random()*0.25}`;
+      c.appendChild(p);
+    }
+  });
+  } // fin init
+
+  // Los módulos ES6 siempre cargan después del DOM — llamar directo
+  init();
+</script>
+</body>
+</html>
